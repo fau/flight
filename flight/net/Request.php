@@ -128,6 +128,10 @@ class Request {
     public function __construct($config = array()) {
         // Default properties
         if (empty($config)) {
+            if (self::getMethod()== 'PUT') {
+                parse_str(file_get_contents("php://input"), $put);
+                $_POST += $put;
+            }
             $config = array(
                 'url' => str_replace('@', '%40', self::getVar('REQUEST_URI', '/')),
                 'base' => str_replace(array('\\',' '), array('/','%20'), dirname(self::getVar('SCRIPT_NAME'))),
@@ -285,5 +289,25 @@ class Request {
         }
 
         return $params;
+    }
+
+    /**
+     * Fetch GET and POST and PUT data
+     *
+     * This method returns a union of GET and POST data as a key-value array, or the value
+     * of the array key if requested; if the array key does not exist, NULL is returned,
+     * unless there is a default value specified.
+     *
+     * @param  string           $key
+     * @param  mixed            $default
+     * @return array|mixed|null
+     */
+    public function params($key = null, $default = null)
+    {
+        $union = array_merge($this->data->getData(), $this->query->getData());
+        if ($key) {
+            return isset($union[$key]) ? $union[$key] : $default;
+        }
+        return $union;
     }
 }
