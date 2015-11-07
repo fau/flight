@@ -1,3 +1,5 @@
+FAU: add PUT params to params
+
 # What is Flight?
 
 Flight is a fast, simple, extensible framework for PHP. Flight enables you to 
